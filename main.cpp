@@ -79,6 +79,7 @@ int main() {
 	std::vector<sf::RectangleShape> rects = {rect1, rect2, rect3, rect4, rect5, rect6, rect7, rect8, rect9, rect10, rect11, rect12, rect13, rect14, rect15, rect16};
 	std::vector<int> scores = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	std::vector<sf::Text> texts = {text1, text2, text3, text4, text5, text6, text7, text8, text9, text10, text11, text12, text13, text14, text15, text16};
+	std::vector<int> scoresOld = scores;
 	
 	scores = addNewRects(2, scores);
 	
@@ -93,10 +94,102 @@ int main() {
 			switch (event.type) {
 				case sf::Event::Closed:
 					window.close();
-					for (int i = 0; i < 16; i++) {
-						std::cout << std::to_string(scores[i]) << std::endl;
-					}
 					break;
+				case sf::Event::KeyPressed:
+					switch (event.key.code) {
+						scoresOld = scores;
+						case sf::Keyboard::Right:
+							for (int i = 15; i >= 0; i--) {
+								int needRect = 0;
+								if (scores[i] != 0 && i % 4 != 3) {
+									if (scores[i + 1] == 0) {
+										needRect = 1;
+										while (scores[i + needRect + 1] == 0 && (i + 1 + needRect) % 4 != 0) {
+											needRect++;
+										}
+										scores[i + needRect] = scores[i];
+										scores[i] = 0;
+									}
+									
+									if (scores[i + needRect] == scores[i + needRect + 1] && (i + needRect + 2) % 4 != 1) {
+										scores[i + needRect + 1] += scores[i + needRect];
+										scores[i + needRect] = 0;
+									} 
+								}
+							}
+							if (scores != scoresOld)
+								scores = addNewRects(1, scores);
+							break;
+						case sf::Keyboard::Left:
+							scoresOld = scores;
+							for (int i = 0; i < 16; i++) {
+								int needRect = 0;
+								if (scores[i] != 0 && (i + 1) % 4 != 1) {
+									if (scores[i - 1] == 0) {
+										needRect = 1;
+										while (scores[i - needRect - 1] == 0 && (i - needRect) % 4 != 0) {
+											needRect++;
+										}
+										scores[i - needRect] = scores[i];
+										scores[i] = 0;
+									}
+									
+									if (scores[i - needRect] == scores[i - needRect - 1] && (i - needRect - 2) % 4 != 0) {
+										scores[i - needRect - 1] += scores[i - needRect];
+										scores[i - needRect] = 0;
+									} 
+								}
+							}
+							if (scores != scoresOld)
+								scores = addNewRects(1, scores);
+							break;
+						case sf::Keyboard::Up:
+							scoresOld = scores;
+							for (int i = 0; i < 16; i++) {
+								int needRect = 0;
+								if (scores[i] != 0 && i + 1 > 4) {
+									if (scores[i - 4] == 0) {
+										needRect = 4;
+										while (scores[i - needRect - 4] == 0 && i - needRect > 4) {
+											needRect += 4;
+										}
+										scores[i - needRect] = scores[i];
+										scores[i] = 0;
+									}
+									
+									if (scores[i - needRect] == scores[i - needRect - 4]) {
+										scores[i - needRect - 4] += scores[i - needRect];
+										scores[i - needRect] = 0;
+									} 
+								}
+							}
+							if (scores != scoresOld)
+								scores = addNewRects(1, scores);
+							break;
+						case sf::Keyboard::Down:
+							scoresOld = scores;
+							for (int i = 15; i >= 0; i--) {
+								int needRect = 0;
+								if (scores[i] != 0 && i + 1 < 13) {
+									if (scores[i + 4] == 0) {
+										needRect = 4;
+										while (scores[i + needRect + 4] == 0 && (i + needRect + 1) < 13) {
+											needRect += 4;
+										}
+										scores[i + needRect] = scores[i];
+										scores[i] = 0;
+									}
+									
+									if (scores[i + needRect] == scores[i + needRect + 4]) {
+										scores[i + needRect + 4] += scores[i + needRect];
+										scores[i + needRect] = 0;
+									} 
+								}
+							}
+							if (scores != scoresOld)
+								scores = addNewRects(1, scores);
+							break;
+					}
 			}
 		}
 		
@@ -107,6 +200,9 @@ int main() {
 		
 		for (int i = 0; i < 16; i++) {
 			switch (scores[i]) {
+				case 0:
+					rects[i].setFillColor(sf::Color(216, 206, 196));
+					break;
 				case 2:
 					rects[i].setFillColor(sf::Color(240, 228, 217));
 					break;
@@ -146,8 +242,15 @@ int main() {
 				texts[i].setColor(sf::Color(121, 112, 99));
 				texts[i].setStyle(sf::Text::Bold);
 				texts[i].setString(std::to_string(scores[i]));
+			} else if (scores[i] < 16) {
+				texts[i].setFillColor(sf::Color(216, 206, 196));
+				texts[i].setString(std::to_string(scores[i]));
+			} else {
+				texts[i].setFillColor(sf::Color(255, 246, 230));
+				texts[i].setString(std::to_string(scores[i]));
 				window.draw(texts[i]);
 			}
+			window.draw(texts[i]);
 		}
 		
 		window.display();
