@@ -1,43 +1,91 @@
 #include <SFML/Graphics.hpp>
+#include <stdlib.h>
+#include <time.h>
+#include <iostream>
+
+std::vector<int> addNewRects(int amount, std::vector<int> scores) {
+	for (int i = 0; i <= amount; i++) {
+		std::srand(time(NULL));
+		int rect;
+		do {
+			rect = rand() % 15 + 0;
+		} while (scores[rect] != 0);
+		int num = rand() % 100 + 1;
+		if (num > 75) {
+			scores[rect] = 4;
+		} else {
+			scores[rect] = 2;
+		}
+	}
+	
+	return scores;
+}
 
 int main() {
 	sf::RenderWindow window(sf::VideoMode(600.f, 700.f), "2048!");
+	 
+	sf::Font font;
+	font.loadFromFile("arial.ttf");
 	
 	sf::RectangleShape rect1(sf::Vector2f(125, 125));
+	sf::Text text1("", font, 40);
 	rect1.move(sf::Vector2f(20, 20));
 	sf::RectangleShape rect2(sf::Vector2f(125, 125));
+	sf::Text text2("", font, 40);
 	rect2.move(sf::Vector2f(165, 20));
 	sf::RectangleShape rect3(sf::Vector2f(125, 125));
+	sf::Text text3("", font, 40);
 	rect3.move(sf::Vector2f(310, 20));
 	sf::RectangleShape rect4(sf::Vector2f(125, 125));
+	sf::Text text4("", font, 40);
 	rect4.move(sf::Vector2f(455, 20));
 	sf::RectangleShape rect5(sf::Vector2f(125, 125));
+	sf::Text text5("", font, 40);
 	rect5.move(sf::Vector2f(20, 165));
 	sf::RectangleShape rect6(sf::Vector2f(125, 125));
+	sf::Text text6("", font, 40);
 	rect6.move(sf::Vector2f(165, 165));
 	sf::RectangleShape rect7(sf::Vector2f(125, 125));
+	sf::Text text7("", font, 40);
 	rect7.move(sf::Vector2f(310, 165));
 	sf::RectangleShape rect8(sf::Vector2f(125, 125));
+	sf::Text text8("", font, 40);
 	rect8.move(sf::Vector2f(455, 165));
 	sf::RectangleShape rect9(sf::Vector2f(125, 125));
+	sf::Text text9("", font, 40);
 	rect9.move(sf::Vector2f(20, 310));
 	sf::RectangleShape rect10(sf::Vector2f(125, 125));
+	sf::Text text10("", font, 40);
 	rect10.move(sf::Vector2f(165, 310));
 	sf::RectangleShape rect11(sf::Vector2f(125, 125));
+	sf::Text text11("", font, 40);
 	rect11.move(sf::Vector2f(310, 310));
 	sf::RectangleShape rect12(sf::Vector2f(125, 125));
+	sf::Text text12("", font, 40);
 	rect12.move(sf::Vector2f(455, 310));
 	sf::RectangleShape rect13(sf::Vector2f(125, 125));
+	sf::Text text13("", font, 40);
 	rect13.move(sf::Vector2f(20, 455));
 	sf::RectangleShape rect14(sf::Vector2f(125, 125));
+	sf::Text text14("", font, 40);
 	rect14.move(sf::Vector2f(165, 455));
 	sf::RectangleShape rect15(sf::Vector2f(125, 125));
+	sf::Text text15("", font, 40);
 	rect15.move(sf::Vector2f(310, 455));
 	sf::RectangleShape rect16(sf::Vector2f(125, 125));
+	sf::Text text16("", font, 40);
 	rect16.move(sf::Vector2f(455, 455));
 	
 	std::vector<sf::RectangleShape> rects = {rect1, rect2, rect3, rect4, rect5, rect6, rect7, rect8, rect9, rect10, rect11, rect12, rect13, rect14, rect15, rect16};
 	std::vector<int> scores = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	std::vector<sf::Text> texts = {text1, text2, text3, text4, text5, text6, text7, text8, text9, text10, text11, text12, text13, text14, text15, text16};
+	
+	scores = addNewRects(2, scores);
+	
+	for (int i = 0; i < 16; i++) {
+		sf::Vector2f centerPos = sf::Vector2f(rects[i].getPosition().x + rects[i].getSize().x / 2, rects[i].getPosition().y + rects[i].getSize().y / 2);
+		texts[i].setPosition(centerPos.x - texts[i].getGlobalBounds().width / 2, centerPos.y - texts[i].getGlobalBounds().height / 2);
+	}
 	
 	while (window.isOpen()) {
 		sf::Event event;
@@ -45,6 +93,9 @@ int main() {
 			switch (event.type) {
 				case sf::Event::Closed:
 					window.close();
+					for (int i = 0; i < 16; i++) {
+						std::cout << std::to_string(scores[i]) << std::endl;
+					}
 					break;
 			}
 		}
@@ -91,6 +142,12 @@ int main() {
 					break;
 			}
 			window.draw(rects[i]);
+			if (scores[i] != 0) {
+				texts[i].setColor(sf::Color(121, 112, 99));
+				texts[i].setStyle(sf::Text::Bold);
+				texts[i].setString(std::to_string(scores[i]));
+				window.draw(texts[i]);
+			}
 		}
 		
 		window.display();
